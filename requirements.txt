@@ -1,0 +1,45 @@
+# VRPS-RunPod — trimmed Python deps for the HEADLESS OFFLINE pipeline.
+#
+# Dropped vs upstream pyproject (GUI / realtime / DLNA only):
+#   PySide6-Essentials, pyinstaller, av, pymp4, pynvvideocodec, py-spy
+# Kept: the ONNX + CuPy + TensorRT runtime that the offline 2D->3D/VR and
+# matting (RVM / MatAnyone2 / SAM3) paths actually import.
+#
+# sm_120 / Blackwell (RTX PRO 4500) notes are in the Dockerfile header.
+
+# --- core numerics / IO ---
+numpy>=1.26,<2.1
+opencv-python-headless>=4.10          # headless build: no GUI libGL needed
+pillow>=10
+
+# --- ONNX Runtime with CUDA + TensorRT execution providers ---
+# onnxruntime-gpu provides CUDAExecutionProvider and TensorrtExecutionProvider.
+# Do NOT also install plain onnxruntime; it shadows the GPU build.
+onnxruntime-gpu>=1.19
+onnx>=1.16
+
+# --- CuPy GPU renderer (sm_120 native via bundled CUDA toolkit) ---
+cupy-cuda12x[ctk]
+
+# --- cuDNN 9 in-venv (ORT CUDA EP requires it; not in the toolkit extra) ---
+nvidia-cudnn-cu12>=9.7,<10
+
+# --- TensorRT engine build/cache ---
+tensorrt-cu12>=10.0
+
+# --- model fetching (heavy models: MatAnyone2, SAM3) ---
+huggingface_hub>=0.25
+
+# --- SAM3 / YOLO-World prepass (CLIP tokenizer lives in osam) ---
+# WARNING: osam depends on plain `onnxruntime`, which would SHADOW
+# onnxruntime-gpu and silently drop the CUDA/TensorRT providers (CPU-only).
+# It is therefore installed WITHOUT deps in the Dockerfile via a dedicated step
+# (see below), not here. Do not move `osam` into this file.
+#
+#   pip install --no-deps osam==0.4.0
+#
+# osam's only runtime needs that the offline path actually hits are numpy +
+# pillow (already pinned above) for the CLIP tokenizer in
+# offline/sam3_matanyone2.py. If a future code path needs more of osam, add the
+# specific transitive dep here explicitly rather than letting osam pull
+# onnxruntime.

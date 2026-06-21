@@ -1,0 +1,40 @@
+﻿# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+videos/
+*.egg-info
+
+# Virtual environments
+.venv
+.claude
+.base
+uv
+set
+NVENC
+
+#other big Files
+*.mp4
+*.mkv
+*.pt
+*.aac
+*.ass
+*.srt
+*.psd
+uv.lock
+*.onnx
+*.onnx.data
+*.zip
+*.7z
+
+#cache or prompt
+cache/
+build/
+debug_output/
+runtime_cache/
+reference/
+baseline/
+
+VR_Video_Passthrough_Server_compare/

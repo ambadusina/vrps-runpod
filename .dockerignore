@@ -1,0 +1,39 @@
+# Keep the build context small. IMPORTANT: do not exclude anything under src/
+# that a selective COPY needs (lesson from prior projects: an over-broad
+# .dockerignore silently drops files the Dockerfile COPY expects).
+
+# VCS / CI noise
+.git
+.github
+**/.git
+**/__pycache__
+**/*.pyc
+**/*.pyo
+
+# Upstream dev-only trees that the headless offline image does not use.
+# These live under src/ from the upstream clone; excluding them trims the image
+# without touching any offline import path.
+src/ui/
+src/dlna/
+src/http_app/
+src/website/
+src/tests/
+src/summary/
+src/prompt/
+src/examples/
+src/packaging/
+src/build_exe.py
+src/build_exe.bat
+src/VR_Video_Passthrough_Server.spec
+src/pt_core.spec
+src/run_server.bat
+src/main.py
+
+# Local model blobs (models are fetched at build/runtime, never from context)
+src/models/**/*.onnx
+src/models/**/*.onnx.data
+src/models/**/*.engine
+
+# Editor / OS
+.DS_Store
+*.swp
