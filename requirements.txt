@@ -15,7 +15,7 @@ pillow>=10
 # --- ONNX Runtime with CUDA + TensorRT execution providers ---
 # onnxruntime-gpu provides CUDAExecutionProvider and TensorrtExecutionProvider.
 # Do NOT also install plain onnxruntime; it shadows the GPU build.
-onnxruntime-gpu>=1.19
+onnxruntime-gpu>=1.19,<1.27
 onnx>=1.16
 
 # --- CuPy GPU renderer (sm_120 native via bundled CUDA toolkit) ---
