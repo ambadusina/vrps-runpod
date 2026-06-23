@@ -80,6 +80,13 @@ ENV PT_ONNX_PROVIDERS=TensorrtExecutionProvider,CUDAExecutionProvider \
     PT_ONNX_TRT_ENGINE_CACHE_ENABLE=1 \
     HF_HOME=/workspace/hf
 
+# Expose pip-installed NVIDIA libs to the dynamic linker so onnxruntime's
+# TensorRT EP can load libnvinfer.so.10 (and cuDNN/cuBLAS). These wheels drop
+# their .so files in per-package site-packages dirs that are NOT on the default
+# linker search path, which otherwise forces a silent fallback to the CUDA EP.
+# Must be set before build-models.sh (that step imports onnxruntime).
+ENV LD_LIBRARY_PATH=/opt/venv/lib/python3.12/site-packages/tensorrt_libs:/opt/venv/lib/python3.12/site-packages/nvidia/cudnn/lib:/opt/venv/lib/python3.12/site-packages/nvidia/cublas/lib:${LD_LIBRARY_PATH}
+
 # ---- Bake the lightweight models into the image (hybrid: heavy ones at runtime) ----
 # build-models.sh downloads DA3 base + base_hd, NVDS, and RVM into /app/models.
 # Heavy models (MatAnyone2, SAM3, large_hd) are intentionally skipped here and
