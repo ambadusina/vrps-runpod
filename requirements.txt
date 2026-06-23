@@ -15,6 +15,9 @@ pillow>=10
 # --- ONNX Runtime with CUDA + TensorRT execution providers ---
 # onnxruntime-gpu provides CUDAExecutionProvider and TensorrtExecutionProvider.
 # Do NOT also install plain onnxruntime; it shadows the GPU build.
+# IMPORTANT: 1.27.0 dropped CUDA 12 (it's CUDA-13-only -> needs libcudart.so.13,
+# which this 12.8 image does not have). Pin below 1.27 to keep the CUDA 12
+# build. 1.26.x is the last CUDA-12 release line.
 onnxruntime-gpu>=1.19,<1.27
 onnx>=1.16
 
@@ -25,7 +28,10 @@ cupy-cuda12x[ctk]
 nvidia-cudnn-cu12>=9.7,<10
 
 # --- TensorRT engine build/cache ---
-tensorrt-cu12>=10.0
+# MUST stay on the v10 branch: onnxruntime-gpu <1.27 links against
+# libnvinfer.so.10. tensorrt-cu12 11.x ships libnvinfer.so.11 -> ORT's TensorRT
+# EP fails to load and silently falls back to the (slower) CUDA EP.
+tensorrt-cu12>=10.0,<11
 
 # --- model fetching (heavy models: MatAnyone2, SAM3) ---
 huggingface_hub>=0.25
